@@ -10,14 +10,26 @@ import { useState, useRef, useEffect } from 'react';
 export function ChatInterface() {
     const [error, setError] = useState<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const { messages, input, handleInputChange, handleSubmit } = useChat({
+    const { messages, input, handleInputChange, handleSubmit, setMessages } = useChat({
         api: '/api/chat',
         initialMessages: [
             { role: 'system', content: `👋 You are now chatting with ${AI_CONFIG.model}.` },
         ],
         onError: (error: Error) => {
             console.error(error);
-            setError('An error occurred while fetching the response. Please try again.');
+            if (error.message.includes('RATE_LIMIT_EXCEEDED')) {
+                setError('Rate limit exceeded. Please try again later.');
+                setMessages(prevMessages => [
+                    ...prevMessages,
+                    {
+                        role: 'system',
+                        content: 'Rate limit exceeded. Please try again later.',
+                        isError: true
+                    }
+                ]);
+            } else {
+                setError('An error occurred while fetching the response. Please try again.');
+            }
         },
     });
 

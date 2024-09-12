@@ -1,12 +1,16 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { AI_CONFIG } from './config/ai-config'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'AI Chat Interface',
-  description: 'Chat with AI models',
+  title: AI_CONFIG.name,
+  description: `Chat with ${AI_CONFIG.model} model`,
+  icons: {
+    icon: '/favicon.png',
+  },
 }
 
 export default function RootLayout({

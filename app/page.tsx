@@ -14,7 +14,7 @@ export default function Home() {
         </div>
       </main>
       <footer className="text-center py-4 text-sm text-gray-600">
-        made by <Link href="https://x.com/mattppal" className="underline hover:text-black">matt</Link> with ❤️ | deployed on <Link href="https://replit.com?utm_source=matt&utm_medium=app&utm_campaign=chat-with-o1" className="underline hover:text-black">replit</Link> 👾
+        made with ❤️ by <Link href="https://x.com/mattppal" className="underline hover:text-black">matt</Link> & deployed on <Link href="https://replit.com?utm_source=matt&utm_medium=app&utm_campaign=chat-with-o1" className="underline hover:text-black">replit</Link> 👾
       </footer>
     </div>
   );

@@ -4,11 +4,13 @@ interface MessageProps {
   message: {
     role: string;
     content: string;
+    isError?: boolean;
   };
 }
 
 export function AnimatedMessage({ message }: MessageProps) {
   const isUser = message.role === 'user';
+  const isError = message.isError;
 
   return (
     <motion.div
@@ -16,10 +18,10 @@ export function AnimatedMessage({ message }: MessageProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       className={`p-4 rounded-lg ${
-        isUser ? 'bg-gray-100 ml-auto' : 'bg-white border border-border'
+        isUser ? 'bg-gray-100 ml-auto' : isError ? 'bg-red-100 border-red-300' : 'bg-white border border-border'
       } max-w-[80%] shadow-md`}
     >
-      <p className="text-sm text-black">{message.content}</p>
+      <p className={`text-sm ${isError ? 'text-red-600 font-semibold' : 'text-black'}`}>{message.content}</p>
     </motion.div>
   );
 }
