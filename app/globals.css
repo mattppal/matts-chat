@@ -89,6 +89,6 @@ body {
   }
 
   body {
-    @apply text-foreground bg-background;
+    @apply text-[color:var(--foreground)] bg-[color:var(--background)];
   }
 }

@@ -29,8 +29,11 @@ export function middleware(request: NextRequest) {
             });
         }
 
-        requestTimestamps.push(now);
-        rateLimit.set(ip, requestTimestamps);
+        // Remove timestamps outside the current window
+        rateLimit.set(ip, requestsInWindow);
+
+        // Add the current request timestamp
+        requestsInWindow.push(now);
     }
 
     return NextResponse.next();

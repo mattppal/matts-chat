@@ -10,8 +10,6 @@ module.exports = {
             colors: {
                 'accent-gray': '#f3f4f6',
                 border: '#e5e7eb',
-                background: 'hsl(var(--background))',
-                foreground: 'hsl(var(--foreground))',
             },
         },
     },

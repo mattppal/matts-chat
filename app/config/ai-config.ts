@@ -1,6 +1,5 @@
 export const AI_CONFIG = {
-  name: "💬 Chat with GPT-4o",
-  model: "gpt-4o",
-  // model: "claude-3-5-sonnet-20240620",
-  provider: "openai",
+  name: "Chat with Claude Sonnet",
+  model: "claude-3-sonnet-20240229",
+  provider: "anthropic" as "openai" | "anthropic",
 };

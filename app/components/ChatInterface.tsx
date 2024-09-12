@@ -1,11 +1,12 @@
 'use client';
 
 import { useChat } from 'ai/react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/app/components/ui/card';
 import { MessageList } from './MessageList';
 import { InputArea } from './InputArea';
-import { AI_CONFIG } from '@/config/ai-config';
+import { AI_CONFIG } from '@/app/config/ai-config';
 import { useState, useRef, useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 export function ChatInterface() {
     const [error, setError] = useState<string | null>(null);
@@ -13,7 +14,7 @@ export function ChatInterface() {
     const { messages, input, handleInputChange, handleSubmit, setMessages } = useChat({
         api: '/api/chat',
         initialMessages: [
-            { role: 'system', content: `👋 You are now chatting with ${AI_CONFIG.model}.` },
+            { id: uuidv4(), role: 'system', content: `👋 You are now chatting with ${AI_CONFIG.model}.` },
         ],
         onError: (error: Error) => {
             console.error(error);
@@ -22,6 +23,7 @@ export function ChatInterface() {
                 setMessages(prevMessages => [
                     ...prevMessages,
                     {
+                        id: uuidv4(),
                         role: 'system',
                         content: 'Rate limit exceeded. Please try again later.',
                         isError: true

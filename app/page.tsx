@@ -1,5 +1,5 @@
-import { ChatInterface } from '@/components/ChatInterface';
-import { AI_CONFIG } from '@/config/ai-config';
+import { ChatInterface } from '@/app/components/ChatInterface';
+import { AI_CONFIG } from '@/app/config/ai-config';
 import Link from 'next/link';
 
 export default function Home() {
@@ -14,7 +14,7 @@ export default function Home() {
         </div>
       </main>
       <footer className="text-center py-4 text-sm text-gray-600">
-        made with ❤️ by <Link href="https://x.com/mattppal" className="underline hover:text-black">matt</Link> & deployed on <Link href="https://replit.com?utm_source=matt&utm_medium=app&utm_campaign=chat-with-o1" className="underline hover:text-black">replit</Link> 👾
+        made by <Link href="https://x.com/mattppal" className="underline hover:text-black">matt</Link> with ❤️
       </footer>
     </div>
   );
