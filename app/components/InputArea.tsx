@@ -14,9 +14,9 @@ export function InputArea({ input, handleInputChange, handleSubmit }: InputAreaP
         value={input}
         onChange={handleInputChange}
         placeholder="Type your message..."
-        className="flex-grow bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+        className="flex-grow bg-white border-gray-300 text-black placeholder-gray-400"
       />
-      <Button type="submit" className="bg-blue-600 hover:bg-blue-700">Send</Button>
+      <Button type="submit" className="bg-black text-white hover:bg-gray-800">Send</Button>
     </form>
   );
 }

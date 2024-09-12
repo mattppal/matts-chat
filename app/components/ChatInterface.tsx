@@ -26,7 +26,7 @@ export function ChatInterface() {
     }, [messages]);
 
     return (
-        <Card className="bg-gray-800 border-gray-700 shadow-xl">
+        <Card className="bg-white border-gray-200 shadow-xl">
             <CardContent className="p-6 flex flex-col h-[70vh]">
                 {error && <div className="text-red-500 mb-4">{error}</div>}
                 <div className="flex-grow overflow-y-auto mb-4">

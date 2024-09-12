@@ -16,10 +16,10 @@ export function AnimatedMessage({ message }: MessageProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       className={`p-4 rounded-lg ${
-        isUser ? 'bg-blue-600 ml-auto' : 'bg-gray-700'
+        isUser ? 'bg-gray-100 ml-auto' : 'bg-white border border-border'
       } max-w-[80%] shadow-md`}
     >
-      <p className="text-sm">{message.content}</p>
+      <p className="text-sm text-black">{message.content}</p>
     </motion.div>
   );
 }
