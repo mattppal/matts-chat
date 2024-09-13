@@ -5,9 +5,10 @@ interface InputAreaProps {
     input: string;
     handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+    isLoading: boolean;
 }
 
-export function InputArea({ input, handleInputChange, handleSubmit }: InputAreaProps) {
+export function InputArea({ input, handleInputChange, handleSubmit, isLoading }: InputAreaProps) {
     return (
         <form onSubmit={handleSubmit} className="flex space-x-2">
             <Input
@@ -15,8 +16,11 @@ export function InputArea({ input, handleInputChange, handleSubmit }: InputAreaP
                 onChange={handleInputChange}
                 placeholder="Type your message..."
                 className="flex-grow bg-white border-gray-300 text-black placeholder-gray-400"
+                disabled={isLoading}
             />
-            <Button type="submit" className="bg-black text-white hover:bg-gray-800">Send</Button>
+            <Button type="submit" className="bg-black text-white hover:bg-gray-800" disabled={isLoading}>
+                {isLoading ? 'Sending...' : 'Send'}
+            </Button>
         </form>
     );
 }

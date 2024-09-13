@@ -1,78 +1,74 @@
-import { Configuration, OpenAIApi } from "openai-edge";
-import { OpenAIStream, StreamingTextResponse } from "ai";
 import { AI_CONFIG } from "@/app/config/ai-config";
-import Anthropic from "@anthropic-ai/sdk";
-
-const config = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(config);
-
-const anthropic = new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
-});
 
 export const runtime = "edge";
 
 export async function POST(req: Request) {
-    try {
-        const { messages } = await req.json();
+    const { messages } = await req.json();
 
-        if (AI_CONFIG.provider === "openai") {
-            const response = await openai.createChatCompletion({
-                model: AI_CONFIG.model,
-                stream: true,
-                messages,
-            });
-            const stream = OpenAIStream(response);
-            return new StreamingTextResponse(stream);
-        } else if (AI_CONFIG.provider === "anthropic") {
-            const systemMessage = messages.find(
-                (msg: { role: string }) => msg.role === "system"
-            );
-            const userMessages = messages.filter(
-                (msg: { role: string }) => msg.role !== "system"
-            );
+    const openRouterRequest = {
+        model: AI_CONFIG.model,
+        messages,
+        stream: true,
+    };
 
-            const response = await anthropic.messages.create({
-                model: AI_CONFIG.model,
-                system: systemMessage?.content || undefined,
-                messages: userMessages.map(
-                    (msg: { role: string; content: string }) => ({
-                        role: msg.role === "user" ? "user" : "assistant",
-                        content: msg.content,
-                    })
-                ),
-                max_tokens: 1000,
-                stream: true,
-            });
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+            "HTTP-Referer": process.env.YOUR_SITE_URL || "", // Optional
+            "X-Title": process.env.YOUR_SITE_NAME || "", // Optional
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(openRouterRequest),
+    });
 
-            // Create a ReadableStream from the Anthropic response
-            const stream = new ReadableStream({
-                async start(controller) {
-                    for await (const chunk of response) {
-                        if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
-                            controller.enqueue(chunk.delta.text);
-                        }
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+
+    const transformStream = new TransformStream({
+        async transform(chunk, controller) {
+            const text = decoder.decode(chunk);
+            const lines = text.split('\n');
+            for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                    if (line.includes('[DONE]')) {
+                        controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+                        return;
                     }
-                    controller.close();
-                },
-            });
-
-            return new StreamingTextResponse(stream);
-        } else {
-            throw new Error("Unsupported AI provider");
-        }
-    } catch (error: unknown) {
-        console.error("Error in POST function:", error);
-        return new Response(
-            JSON.stringify({
-                error: "An error occurred while processing your request.",
-            }),
-            {
-                status: 500,
-                headers: { "Content-Type": "application/json" },
+                    try {
+                        const data = JSON.parse(line.slice(6));
+                        const content = data.choices[0]?.delta?.content || '';
+                        if (content) {
+                            const formattedData = {
+                                id: data.id,
+                                object: 'chat.completion.chunk',
+                                created: data.created,
+                                model: data.model,
+                                choices: [
+                                    {
+                                        index: 0,
+                                        delta: { content },
+                                        finish_reason: null
+                                    }
+                                ]
+                            };
+                            controller.enqueue(encoder.encode(`data: ${JSON.stringify(formattedData)}\n\n`));
+                        }
+                    } catch (error) {
+                        console.error('Error parsing JSON:', error);
+                    }
+                }
             }
-        );
-    }
+        },
+    });
+
+    const stream = response.body?.pipeThrough(transformStream);
+
+    return new Response(stream, {
+        headers: {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+        },
+    });
 }
